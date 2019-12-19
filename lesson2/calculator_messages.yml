@@ -1,0 +1,28 @@
+# Prompts for calculator.rb
+english:
+  welcome: "Welcome to Calculator!"
+  first_num: "Enter first number:"
+  second_num: "Enter second number:"
+  invalid_num: "Invalid number, try again."
+  choose_operation: "Choose operation:"
+  operation_list: "(add: +, subtract: -, multiply: *, or divide: /)"
+  invalid_operation: "Operation not recognized."
+  divide_by_zero: "Second number can not be zero for division, enter new number or operation:"
+  continue?: "Would you like another operation? (y/n)"
+  y: 'y'
+  n: 'n'
+  invalid_input: "Invalid input try again."
+  
+espanol:
+  welcome: "Bienvenido a la calculadora!"
+  first_num: "Entras numero primero:"
+  second_num: "Entras numero segundo:"
+  invalid_num: "Numero invalido, intentas el nuevo."
+  choose_operation: "Eliges operacion:"
+  operation_list: "(anadir: +, sustraer: -, multiplicar: *, or dividir: /)"
+  invalid_operation: "Operacion esta invalido."
+  divide_by_zero: "Numero segundo no puede cero para division, entras numero nuevo o operacion:"
+  continue?: "Quieres calcular de nuevo? (s/n)"
+  y: 's'
+  n: 'n'
+  invalid_input: "Entrada invalido, intentas el nuevo."
