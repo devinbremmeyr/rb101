@@ -25,7 +25,7 @@ end
 
 def valid_number?(num_str)
   # This regex allows for negative numbers and floats w/ or w/o leading zero
-  /^-?\d*\.?\d+$/.match?(num_str)
+  /\A-?\d*\.?\d+\z/.match?(num_str)
 end
 
 prompt('welcome')
