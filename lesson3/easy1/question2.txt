@@ -1,0 +1,46 @@
+question2: Explain the difference between ! and ? in ruby.
+============================================
+In method names ! indicates a method with "dangerous" behavior, it can have side
+effects i.e. mutate the caller. ? in a method name indicates the method returns 
+a boolean value, such as String#match? vs String#match. 
+
+
+1. what is != and where should you use it?
+===========================================
+!= means "not equal" it's a condtitonal operator with the opposite result of ==
+Use it in if statements or other conditional tests if you want to test inequality.
+
+
+2. put ! before something, like !user_name
+============================================
+! is the not operator. It evaluates to the opposite boolean value of the 
+expression that comes after it. Therefore !user_name would evaluate as false if 
+user_name had a value other than nil or false.
+
+3. put ! after something, like words.uniq!
+============================================
+This causes the Array instance method uniq! to be called. Assuming the ! 
+version of the method exists. In the case of uniq there does exist the dangerous
+form of the method. uniq! does not return a new Array but instead mutates the 
+original Array that called the uniq! method. This is because of ruby naming
+convention.
+
+4. put ? before something
+============================================
+This can be used to create a single character string. This also works with \ as 
+an escape character. 
+?a => "a"
+?\n => "\n"
+
+5. put ? after something
+============================================
+As answered at the top, at the end of a method name this indicates a method that 
+returns a boolean. ? is also the ternary operator. It can be used to write a one
+line conditional statement. 
+result = condition ? result_if_true : result_if_false
+
+6. put !! before something, like !!user_name
+============================================
+Like 2. above ! is the "not" operator, !! is two "not" operators. !!user_name is 
+a useful expression to put in an if statement before code that should only execute 
+if user_name has been initialized to a value that is not nil or false.
