@@ -13,7 +13,7 @@ def prompt(message)
   puts "=> #{message}"
 end
 
-def display_cards(player, dealer, bet, final: false) # make way cooler
+def display_cards(player, dealer, bet, final: false)
   system 'clear'
   prompt "Dealer"
   puts format_dealer_cards(dealer, final: final)
@@ -25,21 +25,29 @@ end
 
 def format_dealer_cards(hand, final: false)
   return format_player_cards(hand) if final
+
+  card_lines = outline_dealer_cards(hand)
   rank = hand[1][0]
-  r_space = rank == '10' ? '' : ' '
   suit = hand[1][1]
-  card_lines = Array.new(14).map! { '|###|                |'.clone }
-  card_lines[0] = ".___.________________."
-  card_lines[1] = "|###| #{rank}#{r_space}             |"
-  card_lines[2] = "|###| #{suit}              |"
-  card_lines[11] = "|###|              #{suit} |"
-  card_lines[12] = "|###|              #{r_space}#{rank}|"
-  card_lines[13] = "L===L________________!"
   case rank
   when 'A' then draw_art!(card_lines, suit)
   when /[KQJ]/ then draw_art!(card_lines, rank)
   else draw_pips!(card_lines, rank.to_i, suit)
   end
+  card_lines
+end
+
+def outline_dealer_cards(hand)
+  rank = hand[1][0]
+  suit = hand[1][1]
+  card_lines = Array.new(14) { '|###|                |' }
+  card_lines[0] = ".___.________________."
+  card_lines[1] = "|###| #{rank.ljust(2)}             |"
+  card_lines[2] = "|###| #{suit}              |"
+  
+  card_lines[11] = "|###|              #{suit} |"
+  card_lines[12] = "|###|              #{rank.rjust(2)}|"
+  card_lines[13] = "L===L________________!"
   card_lines
 end
 
@@ -49,51 +57,62 @@ def draw_art!(card, art_name)
   end
 end
 
-def draw_pips!(card, num_pips, suit)
-  dub_rows = case num_pips
-             when (4..5) then [4, 10]
-             when (6..8) then [4, 7, 10]
-             when (9..10) then [4, 6, 8, 10]
-             else []
-             end
-  single_rows = case num_pips
-                when 2 then [4, 10]
-                when 3 then [4, 7, 10]
-                when 5 then [7]
-                when 7 then [5]
-                when 8 then [5, 8]
-                when 9 then [7]
-                when 10 then [5, 9]
-                else []
-                end
-  dub_rows.each do |row|
-    card[row][8] = suit
-    card[row][16] = suit
-  end 
+def draw_pips!(card, num_pips, pip)
+  center_column = 12
+  pair_column1 = 8
+  pair_column2 = 16
+  double_rows = double_pip_rows(num_pips)
+  single_rows = single_pip_rows(num_pips)
+
+  double_rows.each do |row|
+    card[row][pair_column1] = pip
+    card[row][pair_column2] = pip
+  end
   single_rows.each do |row|
-    card[row][12] = suit
+    card[row][center_column] = pip
   end
   nil
 end
 
+def double_pip_rows(num_pips)
+  case num_pips
+  when (4..5) then [4, 10]
+  when (6..8) then [4, 7, 10]
+  when (9..10) then [4, 6, 8, 10]
+  else []
+  end
+end
+
+def single_pip_rows(num_pips)
+  case num_pips
+  when 2 then [4, 10]
+  when 3 then [4, 7, 10]
+  when 5 then [7]
+  when 7 then [5]
+  when 8 then [5, 8]
+  when 9 then [7]
+  when 10 then [5, 9]
+  else []
+  end
+end
 
 def format_player_cards(hand)
-  top_string = ''
-  rank_string = ''
-  suit_string = ''
-  base_string = ''
+  top_row = ''
+  rank_row = ''
+  suit_row = ''
+  base_row = ''
   hand.each do |card|
-    top_string += '._____'
-    rank_string += "| #{card[0]}  "
-    rank_string += ' ' unless card[0] == '10'
-    suit_string += "| #{card[1]}   "
-    base_string += '|     '
+    top_row += '._____'
+    rank_row += "| #{card[0]}  "
+    rank_row += ' ' unless card[0] == '10'
+    suit_row += "| #{card[1]}   "
+    base_row += '|     '
   end
-  [top_string, rank_string, suit_string, base_string]
+  [top_row, rank_row, suit_row, base_row]
 end
 
 def shuffle_shoe
-  ranks = %w(A Q K J 10) + ('2'..'9').to_a
+  ranks = %w(A Q K J) + ('2'..'10').to_a
   suits = [SPADE, HEART, CLUB, DIAMOND]
   shoe = ranks.product(suits) * 8
   shoe.shuffle
@@ -207,10 +226,15 @@ loop do
              end
     display_cards(player_hand, dealer_hand, bet, final: true)
   end
-  player_chips += bet * 2 if winner == 'Player'
-  player_chips += bet if winner == 'PUSH'
-  player_chips += bet / 2 if winner == 'Player' && black_jack
-  
+  player_chips += if winner == 'Player' && black_jack
+                    bet * 2 + bet / 2
+                  elsif winner == 'Push'
+                    bet
+                  elsif winner == 'Player'
+                    bet * 2
+                  else
+                    0
+                  end
   prompt "BLACK JACK!" if black_jack
   if winner == 'PUSH'
     prompt "The hand is a #{winner}"
